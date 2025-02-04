@@ -37,7 +37,7 @@ make update
 This command will create a Python environment inside env/, install the dependencies in requirements.txt, and activate the environment.
 
 ### **5. Running a Job Using Makefile**
-To check the project repo's structure, we'll use the command...
+To test the headless browser, we'll use the command...
 ```bash
 make ygainers.csv
 ```
