@@ -60,3 +60,7 @@ The output should look like this...
     ├── global_creds.sh
     └── install_chrome_headless.sh
 ```
+
+### Sample Data
+
+A sample of `ygainers.csv` is included in the `sample_data/` directory for demonstration purposes. This file contains the top stock gainers scraped from Yahoo Finance using the `make ygainers.csv` command.
