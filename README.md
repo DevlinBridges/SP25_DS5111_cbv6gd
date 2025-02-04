@@ -48,3 +48,15 @@ To see our repo's structure, we'll use the command...
 ```bash
 tree SP25_DS5111_cbv6gd -I env
 ```
+The output should look like this...
+```
+/home/ubuntu/SP25_DS5111_cbv6gd
+├── README.md
+├── data
+├── init.sh
+├── makefile
+├── requirements.txt
+└── scripts
+    ├── global_creds.sh
+    └── install_chrome_headless.sh
+```
