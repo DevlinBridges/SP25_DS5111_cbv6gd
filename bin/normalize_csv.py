@@ -3,9 +3,15 @@
 import csv
 import os
 import sys
+import re
+
+def extract_number(value):
+    """Extracts the first numerical value from a string"""
+    match = re.search(r"[-+]?\d*\.?\d+", value)
+    return match.group() if match else "0"
 
 def normalize_csv(input_file):
-    """Reads a raw stock market data CSV and outputs a normalized version with standard headers."""
+    """Reads  raw stock market data CSV and outputs normalized version with standardized headers."""
     
     assert os.path.isfile(input_file), f"File not found: {input_file}"
 
@@ -23,23 +29,22 @@ def normalize_csv(input_file):
 
         ## Handle CSVs that have an empty first column
         if raw_headers[0] == "":
-            raw_headers = raw_headers[1:]  # Remove the empty first column
+            raw_headers = raw_headers[1:]  ## Remove the empty first column
 
         ## Normalize column names
         raw_headers = [col.strip().lower().replace(" ", "_") for col in raw_headers]
 
         print(f"DEBUG: Detected Headers - {raw_headers}")  ## <-- PRINT HEADERS FOR DEBUGGING
 
-        ## Define mapping for different header names
+        ## Define  mapping for different header names
         header_mapping = {
             "symbol": "symbol",
             "price": "price",
             "change": "price_change",  ## Maps 'Change' to 'price_change'
             "change_%": "price_percent_change",  ## Maps 'Change %' to 'price_percent_change'
-            "change_%": "price_percent_change",  ## In case of alternate spacing
         }
 
-        ## Convert headers using the mapping
+        ## Convert headers using mapping
         normalized_headers = [header_mapping.get(h, h) for h in raw_headers]
 
         print(f"DEBUG: Normalized Headers - {normalized_headers}")  ## <-- PRINT NORMALIZED HEADERS
@@ -56,18 +61,18 @@ def normalize_csv(input_file):
             writer = csv.DictWriter(outfile, fieldnames=expected_headers)
             writer.writeheader()
 
-            next(reader)  ## Skip the original header row
+            next(reader)  ## Skip original header row
 
             for row in reader:
                 normalized_row = {
                     "symbol": row.get("symbol", "").strip(),
                     "price": row.get("price", "").strip(),
-                    "price_change": row.get("change", "").strip(),
-                    "price_percent_change": row.get("change_%", "").strip(),
+                    "price_change": extract_number(row.get("change", "")),  ## Extract numeric value
+                    "price_percent_change": extract_number(row.get("change_%", "")),  ## Extract numeric value
                 }
                 writer.writerow(normalized_row)
 
-    print(f"Normalized file created: {output_file}")
+    print(f"✅ Normalized file created: {output_file}")
     return output_file
 
 if __name__ == "__main__":
