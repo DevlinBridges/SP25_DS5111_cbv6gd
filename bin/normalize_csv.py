@@ -109,7 +109,7 @@ def normalize_csv(input_file):
 
     with open(input_file, newline="", encoding="utf-8") as infile:
         reader = csv.reader(infile)
-        normalized_headers = get_normalized_headers(reader)
+        _ = get_normalized_headers(reader)
 
         with open(output_file, "w", newline="", encoding="utf-8") as outfile:
             writer = csv.DictWriter(outfile, fieldnames=expected_headers)
