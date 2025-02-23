@@ -5,21 +5,29 @@ import os
 import sys
 import re
 
+
 def extract_price_details(price_str):
     """Extracts actual price, price change, and percentage change from a formatted string."""
     if not price_str or price_str.strip() == "":
         return "", "", ""
 
     ## Regex pattern to extract three values
-    match = re.match(r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?", price_str)
+    match = re.match(
+        r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?", price_str
+    )
 
     if match:
         price = match.group(1).replace(",", "").strip()  # Extract price
-        price_change = match.group(2).replace(",", "").strip() if match.group(2) else "0"  # Extract change
-        price_percent_change = match.group(3).strip() if match.group(3) else "0"  # Remove %
+        price_change = (
+            match.group(2).replace(",", "").strip() if match.group(2) else "0"
+        )  # Extract change
+        price_percent_change = (
+            match.group(3).strip() if match.group(3) else "0"
+        )  # Remove %
         return price, price_change, price_percent_change
 
     return price_str, "0", "0"  # Default return if parsing fails
+
 
 def normalize_csv(input_file):
     """Reads raw stock market data CSV and outputs a normalized version with standardized headers."""
@@ -32,7 +40,7 @@ def normalize_csv(input_file):
     base_name, ext = os.path.splitext(input_file)
     output_file = f"{base_name}_norm{ext}"
 
-    with open(input_file, newline='', encoding='utf-8') as infile:
+    with open(input_file, newline="", encoding="utf-8") as infile:
         reader = csv.reader(infile)
 
         ## Read and normalize headers
@@ -69,7 +77,7 @@ def normalize_csv(input_file):
         ## Skip first row (headers)
         next(reader)
 
-        with open(output_file, 'w', newline='', encoding='utf-8') as outfile:
+        with open(output_file, "w", newline="", encoding="utf-8") as outfile:
             writer = csv.DictWriter(outfile, fieldnames=expected_headers)
             writer.writeheader()
 
@@ -81,7 +89,9 @@ def normalize_csv(input_file):
                 try:
                     symbol = row[1].strip()  # 🛠️ Symbol is now at index 1
                     raw_price = row[4].strip()  # 🛠️ Price is at index 4 (after shifting)
-                    price, price_change, price_percent_change = extract_price_details(raw_price)
+                    price, price_change, price_percent_change = extract_price_details(
+                        raw_price
+                    )
 
                     normalized_row = {
                         "symbol": symbol,
@@ -97,8 +107,11 @@ def normalize_csv(input_file):
     print(f"✅ Normalized file created: {output_file}")
     return output_file
 
+
 if __name__ == "__main__":
-    assert len(sys.argv) == 2, "Usage: python bin/normalize_csv.py <path to raw gainers csv>"
-    
+    assert (
+        len(sys.argv) == 2
+    ), "Usage: python bin/normalize_csv.py <path to raw gainers csv>"
+
     input_path = sys.argv[1]
     normalize_csv(input_path)
