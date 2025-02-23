@@ -1,6 +1,5 @@
 default:
 	@cat makefile
-
 env:
 	python3 -m venv env; . env/bin/activate; pip install --upgrade pip
 
@@ -19,6 +18,10 @@ wjsgainers.html:
 wjsgainers.csv: wjsgainers.html
 	python -c "import pandas as pd; raw = pd.read_html('wjsgainers.html'); raw[0].to_csv('wjsgainers.csv')"
 
+lint: env
+	. env/bin/activate; pylint $(find . -name "*.py" | grep -v env)
 
+fix-lint: env
+	. env/bin/activate; black $(find . -name "*.py" | grep -v env)
 
 
