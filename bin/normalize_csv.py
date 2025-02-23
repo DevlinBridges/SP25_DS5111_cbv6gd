@@ -1,5 +1,31 @@
 #!/usr/bin/env python3
 
+"""
+normalize_csv.py
+
+This script reads raw stock market data from a CSV file and outputs a normalized
+version with standardized headers and formatted price details.
+
+Features:
+- Extracts and cleans price values, price changes, and percentage changes.
+- Handles cases with missing price change percentages.
+- Removes unnecessary empty columns in the input CSV.
+- Ensures that all expected headers are present.
+- Skips malformed rows and provides error handling.
+
+Usage:
+    python bin/normalize_csv.py <path_to_raw_csv>
+
+Example:
+    python bin/normalize_csv.py data/raw_gainers.csv
+
+Output:
+    A new CSV file with "_norm" appended to the filename, e.g., `data/raw_gainers_norm.csv`
+
+Author: Devlin Bridges
+Date: 2025-02-20
+"""
+
 import csv
 import os
 import sys
@@ -14,23 +40,17 @@ def extract_price_details(price_str):
     ## ✅ Remove placeholders like (N/A)
     price_str = re.sub(r"\(N/A\)", "", price_str).strip()
 
-    ## ✅ Regex pattern to extract price, price change, and percentage change
-    match = re.match(
-        r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?", price_str
-    )
+    ## ✅ Check if parentheses exist, meaning a percentage is included
+    if "(" in price_str and ")" in price_str:
+        match = re.match(r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?", price_str)
+    else:
+        ## ✅ Handle cases where percentage is missing
+        match = re.match(r"([\d,.]+)\s*([+-][\d,.]+)?", price_str)
 
     if match:
         price = re.sub(r"[^\d.]", "", match.group(1))  # ✅ Extract and clean price
-        price_change = (
-            match.group(2).replace(",", "").strip() if match.group(2) else "0"
-        )  # ✅ Extract change
-        price_percent_change = (
-            match.group(3).strip() if match.group(3) else "0"
-        )  # ✅ Extract percentage change
-
-        ## ✅ Ensure price change exists even if percentage is missing
-        if price_change != "0" and price_percent_change == "0":
-            price_percent_change = "0"
+        price_change = match.group(2).replace(",", "").strip() if match.group(2) else "0"
+        price_percent_change = match.group(3).strip() if match.lastindex == 3 and match.group(3) else "0"
 
         return price, price_change, price_percent_change
 
