@@ -42,24 +42,63 @@ def extract_price_details(price_str):
 
     ## ✅ Check if parentheses exist, meaning a percentage is included
     if "(" in price_str and ")" in price_str:
-        match = re.match(r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?", price_str)
+        match = re.match(
+            r"([\d,.]+)\s*([+-][\d,.]+)?\s*\(\s*([+-]?\d*\.?\d+)%\s*\)?",
+            price_str,
+        )
     else:
         ## ✅ Handle cases where percentage is missing
         match = re.match(r"([\d,.]+)\s*([+-][\d,.]+)?", price_str)
 
     if match:
         price = re.sub(r"[^\d.]", "", match.group(1))  # ✅ Extract and clean price
-        price_change = match.group(2).replace(",", "").strip() if match.group(2) else "0"
-        price_percent_change = match.group(3).strip() if match.lastindex == 3 and match.group(3) else "0"
+        price_change = (
+            match.group(2).replace(",", "").strip() if match.group(2) else "0"
+        )
+        price_percent_change = (
+            match.group(3).strip() if match.lastindex == 3 and match.group(3) else "0"
+        )
 
         return price, price_change, price_percent_change
 
     return price_str, "0", "0"  # ✅ Default return if parsing fails
 
 
-def normalize_csv(input_file):
-    """Reads raw stock market data CSV and outputs a normalized version with standardized headers."""
+def get_normalized_headers(reader):
+    """Reads and normalizes headers from the CSV file."""
+    raw_headers = next(reader)
 
+    if raw_headers[0] == "":
+        raw_headers = raw_headers[1:]
+
+    raw_headers = [col.strip().lower().replace(" ", "_") for col in raw_headers]
+
+    header_mapping = {
+        "symbol": "symbol",
+        "price": "price",
+        "change": "price_change",
+        "change_%": "price_percent_change",
+    }
+
+    return [header_mapping.get(h, h) for h in raw_headers]
+
+
+def process_row(row):
+    """Processes a single row of stock market data."""
+    symbol = row[1].strip()
+    raw_price = row[4].strip()
+    price, price_change, price_percent_change = extract_price_details(raw_price)
+
+    return {
+        "symbol": symbol,
+        "price": price,
+        "price_change": price_change,
+        "price_percent_change": price_percent_change,
+    }
+
+
+def normalize_csv(input_file):
+    """Reads raw stock market data CSV and outputs a normalized version."""
     assert os.path.isfile(input_file), f"❌ File not found: {input_file}"
 
     expected_headers = ["symbol", "price", "price_change", "price_percent_change"]
@@ -70,62 +109,18 @@ def normalize_csv(input_file):
 
     with open(input_file, newline="", encoding="utf-8") as infile:
         reader = csv.reader(infile)
-
-        ## ✅ Read and normalize headers
-        raw_headers = next(reader)
-
-        ## ✅ Remove first empty column if it exists
-        if raw_headers[0] == "":
-            raw_headers = raw_headers[1:]  
-
-        ## ✅ Convert headers to lowercase and replace spaces with underscores
-        raw_headers = [col.strip().lower().replace(" ", "_") for col in raw_headers]
-
-        ## ✅ Define correct header mapping
-        header_mapping = {
-            "symbol": "symbol",
-            "price": "price",
-            "change": "price_change",
-            "change_%": "price_percent_change",
-        }
-
-        ## ✅ Convert headers to expected format
-        normalized_headers = [header_mapping.get(h, h) for h in raw_headers]
-
-        ## ✅ Ensure all expected headers exist
-        missing_headers = [h for h in expected_headers if h not in normalized_headers]
-        assert not missing_headers, f"❌ Missing expected headers: {missing_headers}"
-
-        ## ✅ Reopen file as DictReader with corrected headers
-        infile.seek(0)
-        reader = csv.reader(infile)
-
-        ## ✅ Skip first row (headers)
-        next(reader)
+        normalized_headers = get_normalized_headers(reader)
 
         with open(output_file, "w", newline="", encoding="utf-8") as outfile:
             writer = csv.DictWriter(outfile, fieldnames=expected_headers)
             writer.writeheader()
 
             for row in reader:
-                ## ✅ Handle extra leading empty column by shifting values
                 if row[0] == "":
                     row = row[1:]
 
                 try:
-                    symbol = row[1].strip()  # ✅ Symbol is at index 1
-                    raw_price = row[4].strip()  # ✅ Price is at index 4 (after shifting)
-                    price, price_change, price_percent_change = extract_price_details(
-                        raw_price
-                    )
-
-                    normalized_row = {
-                        "symbol": symbol,
-                        "price": price,
-                        "price_change": price_change,
-                        "price_percent_change": price_percent_change,
-                    }
-                    writer.writerow(normalized_row)
+                    writer.writerow(process_row(row))
                 except IndexError:
                     print(f"⚠️ Skipping malformed row: {row}")
                     continue
