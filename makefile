@@ -24,4 +24,5 @@ lint: env
 fix-lint: env
 	. env/bin/activate; black $(find . -name "*.py" | grep -v env)
 
-
+test: env
+	. env/bin/activate && pytest
