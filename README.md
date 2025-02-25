@@ -60,3 +60,5 @@ The output should look like this...
     ├── global_creds.sh
     └── install_chrome_headless.sh
 ```
+
+[![Feature Validation](https://github.com/DevlinBridges/SP25_DS5111_cbv6gd/actions/workflows/validations.yml/badge.svg)](https://github.com/DevlinBridges/SP25_DS5111_cbv6gd/actions/workflows/validations.yml)
