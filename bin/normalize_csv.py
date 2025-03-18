@@ -1,4 +1,3 @@
-
 import csv
 import os
 import sys
@@ -24,6 +23,7 @@ Example:
 Output:
     A new CSV file with '_norm' appended to the filename, e.g., `data/raw_gainers_norm.csv`
 """
+
 
 def extract_price_details(price_str):
     """Extracts the actual price, price change, and percentage change from a formatted string."""

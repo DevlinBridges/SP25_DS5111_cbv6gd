@@ -1,5 +1,6 @@
 import sys
-sys.path.append('.')
+
+sys.path.append(".")
 
 import os
 import pytest
@@ -10,6 +11,7 @@ from bin.normalize_csv import extract_price_details, normalize_csv
 #  TESTS FOR extract_price_details FUNCTION
 # -----------------------
 
+
 @pytest.mark.parametrize(
     "price_str, expected",
     [
@@ -17,7 +19,6 @@ from bin.normalize_csv import extract_price_details, normalize_csv
         ("100 +2 (1.5%)", ("100", "+2", "1.5")),
         ("200 -3 (2.1%)", ("200", "-3", "2.1")),
         ("150 (0.0%)", ("150", "0", "0.0")),
-
         # Edge cases
         ("", ("", "", "")),  # Empty string
         ("NaN", ("NaN", "0", "0")),  # Invalid numeric
@@ -32,6 +33,7 @@ def test_extract_price_details(price_str, expected):
 # -----------------------
 #  TEST FIXTURE: SAMPLE CSV FOR UNIT TESTING
 # -----------------------
+
 
 @pytest.fixture
 def sample_csv(tmp_path):
