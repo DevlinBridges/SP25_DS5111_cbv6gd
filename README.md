@@ -61,6 +61,4 @@ The output should look like this...
     └── install_chrome_headless.sh
 ```
 
-### Sample Data
-
-A sample of `ygainers.csv` is included in the `sample_data/` directory for demonstration purposes. This file contains the top stock gainers scraped from Yahoo Finance using the `make ygainers.csv` command.
+[![Feature Validation](https://github.com/DevlinBridges/SP25_DS5111_cbv6gd/actions/workflows/validations.yml/badge.svg)](https://github.com/DevlinBridges/SP25_DS5111_cbv6gd/actions/workflows/validations.yml)
