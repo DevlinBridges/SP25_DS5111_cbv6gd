@@ -26,3 +26,6 @@ fix-lint: env
 
 test: env
 	. env/bin/activate && pytest
+
+gainers: ygainers.csv
+	python bin/get_gainer.py $(SRC) ygainers.csv ygainers_norm.csv
