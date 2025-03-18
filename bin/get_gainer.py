@@ -1,5 +1,10 @@
 import sys
-from bin.gainers.factory import GainerFactory
+import os
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from gainers.factory import GainerFactory
+
 
 class ProcessGainer:
     def __init__(self, gainer_downloader, gainer_normalizer, input_file, output_file):
@@ -22,13 +27,16 @@ class ProcessGainer:
         normalized_data = self._normalize()
         self._save_to_file(normalized_data)
 
+
 if __name__ == "__main__":
-    assert len(sys.argv) == 4, "Usage: python get_gainer.py <yahoo/wsj> <input_file> <output_file>"
+    assert (
+        len(sys.argv) == 4
+    ), "Usage: python get_gainer.py <yahoo/wsj> <input_file> <output_file>"
     choice, input_file, output_file = sys.argv[1], sys.argv[2], sys.argv[3]
 
     factory = GainerFactory(choice)
     downloader = factory.get_downloader()
     normalizer = factory.get_processor()
-    
+
     runner = ProcessGainer(downloader, normalizer, input_file, output_file)
     runner.process()
