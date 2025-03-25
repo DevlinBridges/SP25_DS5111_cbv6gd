@@ -14,7 +14,7 @@ class ProcessGainer:
         self.output_file = output_file
 
     def _download(self):
-        self.downloader.download()
+        self.downloader.download(self.input_file)
 
     def _normalize(self):
         return self.normalizer.normalize(self.input_file)

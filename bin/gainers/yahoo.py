@@ -10,16 +10,22 @@ from .base import GainerDownload, GainerProcess
 
 class GainerDownloadYahoo(GainerDownload):
     """Handles downloading Yahoo gainers data from the Yahoo Finance website."""
-    # Suppress the warning because this class only needs one method
     # pylint: disable=too-few-public-methods
 
     def __init__(self):
         super().__init__("https://finance.yahoo.com/gainers")
 
-    def download(self):
-        """Simulates downloading Yahoo gainers data."""
+    def download(self, output_file):
+        """Simulates downloading Yahoo gainers data and saves it to a CSV file."""
         print("Downloading Yahoo gainers data from:", self.url)
 
+        with open(output_file, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Symbol", "Name", "Last Price", "Change", "Change %"])
+            writer.writerow(["AAPL", "Apple Inc.", "172.50", "+3.01", "+1.78%"])
+            writer.writerow(["GOOG", "Alphabet Inc.", "138.20", "+1.60", "+1.17%"])
+
+        print(f"✅ Saved Yahoo data to {output_file}")
 
 class GainerProcessYahoo(GainerProcess):
     """Processes and normalizes Yahoo gainers data."""

@@ -9,18 +9,23 @@ import os
 from datetime import datetime
 from .base import GainerDownload, GainerProcess
 
-
 class GainerDownloadWSJ(GainerDownload):
     """Handles downloading WSJ gainers data from the Wall Street Journal."""
 
     def __init__(self):
-        """Initializes with the WSJ gainers URL."""
         super().__init__("https://www.wsj.com/market-data/stocks/us/gainers")
 
-    def download(self):
-        """Prints a message simulating downloading WSJ gainers data."""
+    def download(self, output_file):
+        """Simulates downloading WSJ gainers data and saves it to a CSV file."""
         print("Downloading WSJ gainers data from:", self.url)
 
+        with open(output_file, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Symbol", "Name", "Last Price", "Change", "Change %"])
+            writer.writerow(["MSFT", "Microsoft Corp.", "402.35", "+6.02", "+1.52%"])
+            writer.writerow(["NVDA", "NVIDIA Corp.", "943.50", "+11.20", "+1.20%"])
+
+        print(f"✅ Saved WSJ data to {output_file}")
 
 class GainerProcessWSJ(GainerProcess):
     """Processes and normalizes WSJ gainers CSV data."""
