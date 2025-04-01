@@ -16,18 +16,20 @@ We aim to answer questions like:
 
 ## Entity-Relationship Diagram
 
+### Entity Relationship Diagram (ERD)
+
 ```mermaid
 erDiagram
-    RawGainers {
+    gainers_combined {
         string symbol
-        string source
         date date
         float price
         float price_change
         float price_percent_change
+        string source
     }
 
-    HistoricalOHLCV {
+    symbol_prices {
         string symbol
         date date
         float open
@@ -37,31 +39,37 @@ erDiagram
         int volume
     }
 
-    RecurringSymbols {
+    symbol_counts {
         string symbol
-        int appearances
-        list dates
+        int gain_count
+        list gain_dates
     }
 
-    PriceDistribution {
+    symbol_movements {
         string symbol
-        float avg_price
-        float std_dev
-        int bins
-    }
-
-    WeeklySummary {
-        string symbol
-        int appearances
-        float avg_price
-        float avg_change
+        float avg_open
+        float avg_close
+        float avg_high
+        float avg_low
         float avg_volume
     }
 
-    RawGainers ||--o{ RecurringSymbols : contributes
-    RawGainers ||--o{ PriceDistribution : contributes
-    HistoricalOHLCV ||--o{ WeeklySummary : aggregates
-    RecurringSymbols ||--|| WeeklySummary : joins
+    weekly_gainer_summary {
+        string symbol
+        int gain_count
+        list gain_dates
+        float avg_open
+        float avg_close
+        float avg_high
+        float avg_low
+        float avg_volume
+    }
+
+    gainers_combined ||--|| symbol_prices : "matches by symbol/date"
+    gainers_combined ||--|| symbol_counts : "aggregates to"
+    symbol_prices ||--|| symbol_movements : "summarizes to"
+    symbol_counts ||--|| weekly_gainer_summary : "joins with"
+    symbol_movements ||--|| weekly_gainer_summary : "joins with"
 ```
 
 ## Use Cases
