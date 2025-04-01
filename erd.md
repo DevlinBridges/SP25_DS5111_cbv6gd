@@ -14,6 +14,56 @@ We aim to answer questions like:
 
 ---
 
+## Entity-Relationship Diagram
+
+```mermaid
+erDiagram
+    RawGainers {
+        string symbol
+        string source
+        date date
+        float price
+        float price_change
+        float price_percent_change
+    }
+
+    HistoricalOHLCV {
+        string symbol
+        date date
+        float open
+        float high
+        float low
+        float close
+        int volume
+    }
+
+    RecurringSymbols {
+        string symbol
+        int appearances
+        list dates
+    }
+
+    PriceDistribution {
+        string symbol
+        float avg_price
+        float std_dev
+        int bins
+    }
+
+    WeeklySummary {
+        string symbol
+        int appearances
+        float avg_price
+        float avg_change
+        float avg_volume
+    }
+
+    RawGainers ||--o{ RecurringSymbols : contributes
+    RawGainers ||--o{ PriceDistribution : contributes
+    HistoricalOHLCV ||--o{ WeeklySummary : aggregates
+    RecurringSymbols ||--|| WeeklySummary : joins
+```
+
 ## Use Cases
 
 - **Picking Recurring Stocks**  
