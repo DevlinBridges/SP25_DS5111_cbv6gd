@@ -16,17 +16,33 @@ We aim to answer questions like:
 
 ## Entity-Relationship Diagram
 
-### Entity Relationship Diagram (ERD)
+The ERD below outlines how the raw data is transformed into structured intermediate and final tables to support analysis.
 
 ```mermaid
 erDiagram
+    raw_yahoo_csv {
+        string symbol
+        float price
+        float price_change
+        float price_percent_change
+        string date
+    }
+
+    raw_wsj_csv {
+        string symbol
+        float price
+        float price_change
+        float price_percent_change
+        string date
+    }
+
     gainers_combined {
         string symbol
+        string source
         date date
         float price
         float price_change
         float price_percent_change
-        string source
     }
 
     symbol_prices {
@@ -65,7 +81,9 @@ erDiagram
         float avg_volume
     }
 
-    gainers_combined ||--|| symbol_prices : "matches by symbol/date"
+    raw_yahoo_csv ||--|| gainers_combined : "normalized into"
+    raw_wsj_csv ||--|| gainers_combined : "normalized into"
+    gainers_combined ||--|| symbol_prices : "joins with"
     gainers_combined ||--|| symbol_counts : "aggregates to"
     symbol_prices ||--|| symbol_movements : "summarizes to"
     symbol_counts ||--|| weekly_gainer_summary : "joins with"
