@@ -1,0 +1,6 @@
+Downloading Yahoo gainers data from: https://finance.yahoo.com/gainers
+✅ Saved Yahoo data to data/ygainers_raw_20250325_2001.csv
+Saved Yahoo normalized data to data/ygainers_norm_yahoo_20250325_200101.csv
+Downloading WSJ gainers data from: https://www.wsj.com/market-data/stocks/us/gainers
+✅ Saved WSJ data to data/wsgainers_raw_20250325_2001.csv
+Saved WSJ normalized data to data/wsgainers_norm_wsj_20250325_200101.csv

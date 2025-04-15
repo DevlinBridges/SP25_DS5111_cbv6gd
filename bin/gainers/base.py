@@ -20,8 +20,12 @@ class GainerDownload(ABC):
         self.url = url
 
     @abstractmethod
-    def download(self):
-        """Abstract method to download stock gainers data."""
+    def download(self, output_file):
+        """Abstract method to download stock gainers data.
+
+        Args:
+            output_file (str): File path where the downloaded data should be saved.
+        """
         raise NotImplementedError("Subclasses must implement the download method")
 
 
