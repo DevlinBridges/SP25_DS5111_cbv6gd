@@ -1,25 +1,45 @@
 #!/bin/bash
 
-# Navigate to project root
-cd /home/ubuntu/SP25_DS5111_cbv6gd || exit
+# === Set full paths ===
+PROJECT_DIR="/home/ubuntu/SP25_DS5111_cbv6gd"
+PYTHON_BIN="$PROJECT_DIR/env/bin/python"
+VENV_ACTIVATE="$PROJECT_DIR/env/bin/activate"
+LOG_DIR="$PROJECT_DIR/logs"
+DATA_DIR="$PROJECT_DIR/data"
 
-# Activate virtual environment
-source ~/env/bin/activate
+# === Navigate to project root ===
+cd "$PROJECT_DIR" || exit 1
 
-# Ensure logs folder exists
-mkdir -p logs
+# === Activate virtual environment ===
+source "$VENV_ACTIVATE"
 
-# Get timestamp
+# === Ensure folders exist ===
+mkdir -p "$LOG_DIR"
+mkdir -p "$DATA_DIR"
+
+# === Get current timestamp ===
 timestamp=$(date +"%Y%m%d_%H%M")
 
-# Run Yahoo Gainers
-python bin/get_gainer.py yahoo data/ygainers_raw_${timestamp}.csv data/ygainers_norm
+# === Output file locations ===
+YAHOO_RAW="$DATA_DIR/ygainers_raw_${timestamp}.csv"
+YAHOO_NORM="$DATA_DIR/ygainers_norm"
+WSJ_RAW="$DATA_DIR/wsgainers_raw_${timestamp}.csv"
+WSJ_NORM="$DATA_DIR/wsgainers_norm"
 
-# Run WSJ Gainers
-python bin/get_gainer.py wsj data/wsgainers_raw_${timestamp}.csv data/wsgainers_norm
+# === Log Python version/debug info ===
+echo "🧠 Using Python: $PYTHON_BIN" >> "$LOG_DIR/run_all.log"
+"$PYTHON_BIN" -m pip list >> "$LOG_DIR/run_all.log"
 
-# Log success
-echo "✅ Gainer data collected at ${timestamp}" >> logs/run_all.log
+# === Run Yahoo Gainers Collection ===
+echo "📈 Running Yahoo gainer scrape..." >> "$LOG_DIR/run_all.log"
+$PYTHON_BIN bin/get_gainer.py yahoo "$YAHOO_RAW" "$YAHOO_NORM" >> "$LOG_DIR/run_all.log" 2>&1
 
-# Deactivate venv
+# === Run WSJ Gainers Collection ===
+echo "📰 Running WSJ gainer scrape..." >> "$LOG_DIR/run_all.log"
+$PYTHON_BIN bin/get_gainer.py wsj "$WSJ_RAW" "$WSJ_NORM" >> "$LOG_DIR/run_all.log" 2>&1
+
+# === Log Success Message ===
+echo "✅ Gainer data collected at ${timestamp}" >> "$LOG_DIR/run_all.log"
+
+# === Deactivate virtual environment ===
 deactivate
