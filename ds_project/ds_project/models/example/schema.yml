@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -7,15 +6,45 @@ models:
     columns:
       - name: id
         description: "The primary key for this table"
-        data_tests:
+        tests:
           - unique
           - not_null
 
   - name: my_second_dbt_model
-    description: "A starter dbt model"
+    description: "Another starter dbt model"
     columns:
       - name: id
         description: "The primary key for this table"
-        data_tests:
+        tests:
+          - unique
+          - not_null
+
+  - name: french
+    description: "Test french table"
+    columns:
+      - name: FR
+        description: "French translations of numbers"
+        tests:
+          - unique
+          - not_null
+          - accepted_values:
+              values: ['un', 'deux', 'trois']
+
+  - name: enfr
+    description: "EN to FR number mappings"
+    columns:
+      - name: EN
+        description: "English words for numbers"
+        tests:
+          - relationships:
+              to: ref('ende')
+              field: EN
+
+  - name: ende
+    description: "EN to DE number mappings"
+    columns:
+      - name: EN
+        description: "English words for numbers"
+        tests:
           - unique
           - not_null
