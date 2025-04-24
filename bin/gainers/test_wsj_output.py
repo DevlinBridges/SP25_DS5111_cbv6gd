@@ -1,8 +1,14 @@
-from .wsj import GainerDownloadWSJ
+import pytest
+import os
+from bin.gainers.wsj import GainerDownloadWSJ
 
-def test_download():
-    downloader = GainerDownloadWSJ()
-    downloader.download("test_wsj_output.csv")
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Chrome not available in GitHub Actions environment"
+)
+def test_download(tmp_path):
+    wsj_downloader = GainerDownloadWSJ()
+    output_file = tmp_path / "wsj_test.csv"
+    wsj_downloader.download(str(output_file))
 
-if __name__ == "__main__":
-    test_download()
+    assert output_file.exists()
