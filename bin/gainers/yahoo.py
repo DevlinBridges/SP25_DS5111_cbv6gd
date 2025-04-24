@@ -4,61 +4,51 @@ This module contains implementations of Yahoo gainers downloader and processor.
 
 import csv
 import os
-import re
 import requests
-from bs4 import BeautifulSoup
 from datetime import datetime
 from .base import GainerDownload, GainerProcess
 
 
 class GainerDownloadYahoo(GainerDownload):
-    """Handles downloading Yahoo gainers data from Yahoo Finance."""
+    """Handles downloading Yahoo gainers data using the Screener API."""
 
     def __init__(self):
-        super().__init__("https://finance.yahoo.com/gainers")
+        super().__init__("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved")
 
     def download(self, output_file):
-        """Downloads Yahoo gainers data using requests and saves it to a CSV file."""
-        print("📡 Downloading Yahoo gainers data from:", self.url)
+        """Fetches top gainers via Yahoo's screener API and writes to a CSV."""
+        print("📡 Fetching Yahoo gainers from API...")
 
+        params = {"scrIds": "day_gainers", "count": "100"}
         headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
-            )
+            "User-Agent": "Mozilla/5.0"
         }
 
-        response = requests.get(self.url, headers=headers)
+        response = requests.get(self.url, headers=headers, params=params)
         if response.status_code != 200:
-            print("❌ Failed to fetch data from Yahoo Finance.")
+            print("❌ Failed to fetch data from Yahoo Finance API.")
             return
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        table = soup.find("table")
-        if not table:
-            print("❌ Could not find the gainers table on Yahoo page.")
-            return
+        data = response.json()
+        quotes = data.get("finance", {}).get("result", [])[0].get("quotes", [])
 
-        rows = table.find_all("tr")
-        if not rows:
-            print("⚠️ Table found, but no rows.")
+        if not quotes:
+            print("⚠️ No gainers found in API response.")
             return
 
         with open(output_file, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["Symbol", "Name", "Last Price", "Change", "Change %"])
+            for q in quotes:
+                writer.writerow([
+                    q.get("symbol", ""),
+                    q.get("shortName", ""),
+                    q.get("regularMarketPrice", ""),
+                    q.get("regularMarketChange", ""),
+                    q.get("regularMarketChangePercent", ""),
+                ])
 
-            for row in rows[1:]:
-                cols = row.find_all("td")
-                if len(cols) >= 5:
-                    symbol = cols[0].get_text(strip=True)
-                    name = cols[1].get_text(strip=True)
-                    last_price = cols[2].get_text(strip=True)
-                    change = cols[3].get_text(strip=True)
-                    change_percent = cols[4].get_text(strip=True)
-                    writer.writerow([symbol, name, last_price, change, change_percent])
-
-        print(f"✅ Saved Yahoo data to {output_file}")
+        print(f"✅ Yahoo gainer data saved to {output_file}")
 
 
 class GainerProcessYahoo(GainerProcess):
