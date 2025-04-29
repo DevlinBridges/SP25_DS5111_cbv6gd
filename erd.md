@@ -93,7 +93,7 @@ Aggregation
 See attached charts:
 
 ![Gainer Price Distribution](images/gainer_price_distribution.png)
-![Top 20 Most Frequent Gainers](images/top_gainers_fancy.png)
+![Top 20 Most Frequent Gainers](images/top_gainers.png)
 ![Price Distribution by Recurrence](images/price_distribution_by_recurrence.png)
 ![Avg. Price by Recurrence](images/average_price_by_recurrence_labeled_vertical.png)
 
