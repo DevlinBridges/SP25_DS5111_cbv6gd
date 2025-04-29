@@ -56,10 +56,13 @@ erDiagram
 ## **Use Cases**:
 
 Highlight Recurring Stocks
+
     Identify symbols that show up across multiple days as consistent gainers.
 Price Range Insights
+    
     Understand whether recurring gainers tend to be lower-priced or higher-priced stocks.
 Behavior Patterns
+    
     Compare stock price distributions and averages by how frequently each ticker appears.
 
 ---
@@ -85,19 +88,22 @@ See attached charts:
 ![Price Distribution by Recurrence](images/price_distribution_by_recurrence.png)
 ![Avg. Price by Recurrence](images/average_price_by_recurrence_labeled_vertical.png)
 
-⸻
+---
 
-Summary
+## **Summary:**
 
 This analysis pipeline consolidates gainer data into a clean format and reveals trends around recurring tickers and price ranges.
 
 **Key Insights:**
+
 	•	Stocks like RDDT, TSLA, and MSTR appeared dozens of times
+ 
 	•	Gainers are typically under $100, but outliers reach $500–$1000
+ 
 	•	Repeated gainers show slightly different average price behaviors
 
-⸻
+---
 
-Reflections
+## **Reflections:**
 
 Additional data (like sector info or sentiment) could further enhance the analysis. Nonetheless, this report provides a solid foundation for understanding gainer patterns and spotting potential investment signals.
