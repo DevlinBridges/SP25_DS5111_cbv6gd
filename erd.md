@@ -8,7 +8,7 @@ This report presents a summary analysis of daily stock gainer data collected fro
 
 We aim to answer the question:
 
-_Which stocks appear repeatedly as top gainers?_
+> **Which stocks appear repeatedly as top gainers?**
 
 ---
 
@@ -58,9 +58,11 @@ erDiagram
 Highlight Recurring Stocks
 
     Identify symbols that show up across multiple days as consistent gainers.
+    
 Price Range Insights
     
     Understand whether recurring gainers tend to be lower-priced or higher-priced stocks.
+    
 Behavior Patterns
     
     Compare stock price distributions and averages by how frequently each ticker appears.
@@ -69,13 +71,20 @@ Behavior Patterns
 
 ## **Methods:**
 Data Collection
+
     Gainer CSVs are scraped from Yahoo and WSJ via automated cron jobs.
+    
 Normalization
+
     Each CSV is normalized to a shared schema:
-    TICKER, PRICE, PRICE_CHANGE, PRICE_PERCENT_CHANGE, TIMESTAMP, SOURCE
-Normalized data is loaded into a Snowflake STOCKS table.
-    Aggregation
-A recurrence count is computed for each ticker to see how often it appears.
+    
+    	TICKER, PRICE, PRICE_CHANGE, PRICE_PERCENT_CHANGE, TIMESTAMP, SOURCE
+     
+    Normalized data is loaded into a Snowflake STOCKS table.
+
+Aggregation
+	
+    A recurrence count is computed for each ticker to see how often it appears.
 
 ---
 
