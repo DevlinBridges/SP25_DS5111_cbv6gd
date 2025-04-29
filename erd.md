@@ -1,22 +1,18 @@
-# Gainers Report: Weekly Stock Movement Analysis
+# Gainers Report: Stock Movement Analysis
 
 ---
 
 ## Overview
 
-This report presents a summary analysis of daily stock gainer data collected from **Yahoo Finance** and the **Wall Street Journal** over the course of a week. The goal is to consolidate and process this data to uncover patterns in symbol recurrence, understand the distribution of stock prices, and provide insight into the kinds of stocks that frequently appear as top gainers.
+This report presents a summary analysis of daily stock gainer data collected from **Yahoo Finance** and the **Wall Street Journal** over several weeks. The goal is to consolidate and process this data to uncover patterns in symbol recurrence and price behavior, and to provide insight into the kinds of stocks that frequently appear as top gainers.
 
-We aim to answer questions like:
+We aim to answer the question:
 
-- Which symbols show up repeatedly as gainers?
-- Do recurring gainers have common price behavior or volume patterns?
-- What is the general price range of stocks in the gainer lists?
+_Which stocks appear repeatedly as top gainers?_
 
 ---
 
 ## Entity-Relationship Diagram
-
-The ERD below outlines how the raw data is transformed into structured intermediate and final tables to support analysis.
 
 ```mermaid
 erDiagram
@@ -25,7 +21,7 @@ erDiagram
         float price
         float price_change
         float price_percent_change
-        string date
+        datetime timestamp
     }
 
     raw_wsj_csv {
@@ -33,122 +29,75 @@ erDiagram
         float price
         float price_change
         float price_percent_change
-        string date
+        datetime timestamp
     }
 
     gainers_combined {
-        string symbol
-        string source
-        date date
+        string ticker
         float price
         float price_change
         float price_percent_change
+        datetime timestamp
+        string source
     }
 
-    symbol_prices {
-        string symbol
-        date date
-        float open
-        float high
-        float low
-        float close
-        int volume
-    }
-
-    symbol_counts {
-        string symbol
+    ticker_recurrence {
+        string ticker
         int gain_count
-        list gain_dates
-    }
-
-    symbol_movements {
-        string symbol
-        float avg_open
-        float avg_close
-        float avg_high
-        float avg_low
-        float avg_volume
-    }
-
-    weekly_gainer_summary {
-        string symbol
-        int gain_count
-        list gain_dates
-        float avg_open
-        float avg_close
-        float avg_high
-        float avg_low
-        float avg_volume
     }
 
     raw_yahoo_csv ||--|| gainers_combined : "normalized into"
     raw_wsj_csv ||--|| gainers_combined : "normalized into"
-    gainers_combined ||--|| symbol_prices : "joins with"
-    gainers_combined ||--|| symbol_counts : "aggregates to"
-    symbol_prices ||--|| symbol_movements : "summarizes to"
-    symbol_counts ||--|| weekly_gainer_summary : "joins with"
-    symbol_movements ||--|| weekly_gainer_summary : "joins with"
+    gainers_combined ||--|| ticker_recurrence : "aggregated into"
 ```
 
-## Use Cases
+---
 
-- **Picking Recurring Stocks**  
-  Identify symbols that show up across multiple days to highlight stocks with consistent positive performance signals.
+## **Use Cases**:
 
-- **Price Range Insights**  
-  Summary tables and plots show the typical price per share, helping identify whether gainers tend to be low-cap, mid-cap, or high-cap stocks.
-
-- **Behavior Patterns**  
-  Aggregated historical OHLCV data provides clues about price momentum, volatility, and volume trends.
+Highlight Recurring Stocks
+    Identify symbols that show up across multiple days as consistent gainers.
+Price Range Insights
+    Understand whether recurring gainers tend to be lower-priced or higher-priced stocks.
+Behavior Patterns
+    Compare stock price distributions and averages by how frequently each ticker appears.
 
 ---
 
-## Methods
-
-- **Data Collection**  
-  Gainer data is scraped daily from Yahoo and WSJ using automated scripts scheduled via `cron`. The raw CSVs include `symbol`, `price`, `change`, and `percent change`.
-
-- **Normalization**  
-  Both sources are normalized into a consistent schema:  
-  `symbol`, `price`, `price_change`, `price_percent_change`  
-  using a shared `normalize_csv.py` script.
-
-- **Historical Data Merge**  
-  For each symbol in the gainers list, a separate CSV containing historical OHLCV data is fetched and summarized to calculate weekly averages.
-
-- **Intermediate Tables**  
-  Structured tables are generated to:
-  - Count symbol recurrence
-  - Aggregate daily gainers into a combined table
-  - Summarize price movements from candlestick data
-
-- **Final Outputs**  
-  A `weekly_gainer_summary` table joins recurrence and price behavior, making it easy to filter by frequency or volatility.
+## **Methods:**
+Data Collection
+    Gainer CSVs are scraped from Yahoo and WSJ via automated cron jobs.
+Normalization
+    Each CSV is normalized to a shared schema:
+    TICKER, PRICE, PRICE_CHANGE, PRICE_PERCENT_CHANGE, TIMESTAMP, SOURCE
+Normalized data is loaded into a Snowflake STOCKS table.
+    Aggregation
+A recurrence count is computed for each ticker to see how often it appears.
 
 ---
 
-## Summary
+## **Visual Insights:**
 
-This workflow successfully captures daily gainer trends and converts them into actionable summaries. The resulting intermediate and final tables allow us to identify patterns like repeated appearances, average volume, and volatility.
+See attached charts:
 
-This makes the data immediately useful for:
+![Gainer Price Distribution](images/gainer_price_distribution.png)
+![Top 20 Most Frequent Gainers](images/top_gainers_fancy.png)
+![Price Distribution by Recurrence](images/price_distribution_by_recurrence.png)
+![Avg. Price by Recurrence](images/average_price_by_recurrence_labeled_vertical.png)
 
-- Selecting promising stocks for further analysis
-- Understanding daily gainer characteristics
-- Visualizing price distributions and trends
+⸻
 
----
+Summary
 
-## Reflections
+This analysis pipeline consolidates gainer data into a clean format and reveals trends around recurring tickers and price ranges.
 
-The core questions about recurrence and price behavior can be answered through a clean pipeline of scraping, normalizing, and aggregating data.
+**Key Insights:**
+	•	Stocks like RDDT, TSLA, and MSTR appeared dozens of times
+	•	Gainers are typically under $100, but outliers reach $500–$1000
+	•	Repeated gainers show slightly different average price behaviors
 
-Additional data that could enhance insights:
+⸻
 
-- Sector or industry tags for each stock (e.g., tech vs healthcare)
-- Pre/post-market performance
-- Sentiment or news data (e.g., headlines from the day)
+Reflections
 
----
-
-Overall, the data pipeline provides a solid foundation for spotting consistent performers and understanding the anatomy of a “gainer” over time.
+Additional data (like sector info or sentiment) could further enhance the analysis. Nonetheless, this report provides a solid foundation for understanding gainer patterns and spotting potential investment signals.
