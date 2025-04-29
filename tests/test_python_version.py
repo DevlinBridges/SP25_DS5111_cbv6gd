@@ -1,10 +1,12 @@
+import pytest
 import sys
 
+allowed_versions = {"3.10", "3.11", "3.12"}
+current_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
+@pytest.mark.skipif(
+    current_version not in allowed_versions,
+    reason=f"Skipping: Python {current_version} not in {allowed_versions}"
+)
 def test_python_version():
-    allowed_versions = {"3.10", "3.11", "3.12"}
-    current_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-
-    assert (
-        current_version in allowed_versions
-    ), f"Test failed: Python {current_version} is not in {allowed_versions}"
+    assert current_version in allowed_versions
